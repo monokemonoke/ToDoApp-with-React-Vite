@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
+import CssBaseline from '@mui/material/CssBaseline'
+import Button from '@mui/material/Button'
+import ThumbUp from '@mui/icons-material/ThumbUp'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -28,7 +31,13 @@ function App() {
           >
             Learn React
           </a>
-          {' | '}
+
+          <CssBaseline />
+
+          <Button variant="outlined" startIcon={<ThumbUp />}>
+            OK
+          </Button>
+
           <a
             className="App-link"
             href="https://vitejs.dev/guide/features.html"
@@ -39,6 +48,8 @@ function App() {
           </a>
         </p>
       </header>
+
+
     </div>
   )
 }
