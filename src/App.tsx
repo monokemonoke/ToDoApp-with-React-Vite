@@ -4,12 +4,17 @@ import './App.css'
 import CssBaseline from '@mui/material/CssBaseline'
 import Button from '@mui/material/Button'
 import ThumbUp from '@mui/icons-material/ThumbUp'
+import TodoList from './components/ToDoList';
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <div className="App">
+      <div style={{ margin: "2em" }}>
+        <TodoList />
+      </div>
+
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Hello Vite + React!</p>
