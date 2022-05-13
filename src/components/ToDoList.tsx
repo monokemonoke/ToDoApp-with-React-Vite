@@ -17,10 +17,30 @@ const TodoList = () => {
     ]
 
     const [todos, setTodos] = useState(initialState);
+    const [task, setTask] = useState('');
+
+    const handleNewTask = (event: any) => {
+        setTask(event.target.value);
+    }
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        if (task === '') return;
+        setTodos(todos => [...todos, { task, isCompleted: false }]);
+        setTask('');
+    }
 
     return (
         <div>
             <h1>ToDo List</h1>
+            <form onSubmit={handleSubmit}>
+                Add Task:
+                <input
+                    value={task}
+                    placeholder='Add New Task'
+                    onChange={handleNewTask}
+                />
+                <button type="submit">Add</button>
+            </form>
             <ul>
                 {todos.map((todo, index) => (
                     <li key={index}>{todo.task}</li>
