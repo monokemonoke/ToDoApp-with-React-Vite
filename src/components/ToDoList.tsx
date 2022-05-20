@@ -28,6 +28,11 @@ const TodoList = () => {
         setTodos(todos => [...todos, { task, isCompleted: false }]);
         setTask('');
     }
+    const handleRemoveTask = (index: number) => {
+        const newTodos = [...todos];
+        newTodos.splice(index, 1);
+        setTodos(newTodos);
+    }
 
     return (
         <div>
@@ -46,6 +51,7 @@ const TodoList = () => {
                     <li key={index}>
                         {todo.task}
                         <button>{todo.isCompleted ? "Fin" : "WIP"}</button>
+                        <span onClick={() => handleRemoveTask(index)}>X</span>
                     </li>
                 ))}
             </ul>
