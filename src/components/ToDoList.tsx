@@ -43,7 +43,10 @@ const TodoList = () => {
             </form>
             <ul>
                 {todos.map((todo, index) => (
-                    <li key={index}>{todo.task}</li>
+                    <li key={index}>
+                        {todo.task}
+                        <button>{todo.isCompleted ? "Fin" : "WIP"}</button>
+                    </li>
                 ))}
             </ul>
         </div>
