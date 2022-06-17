@@ -1,6 +1,6 @@
 // import { useState } from 'react';
 import db from '../lib/firebase';
-import { doc, getDocs } from 'firebase/firestore';
+import { doc, getDocs, addDoc } from 'firebase/firestore';
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
@@ -30,17 +30,21 @@ const TodoList = () => {
 		const todoCollectionRef = collection(db, 'todos');
 		getDocs(todoCollectionRef).then((querySnapshot) => {
 			setTodos(querySnapshot.docs.map((doc) => doc.data()));
-			// querySnapshot.forEach((doc) => console.log(doc.data()));
 		});
 	}, []);
 
 	const handleNewTask = (event) => {
 		setTask(event.target.value);
 	};
-	const handleSubmit = (event) => {
+	const handleSubmit = async (event) => {
 		event.preventDefault();
 		if (task === '') return;
 		setTodos((todos) => [...todos, { task, isCompleted: false }]);
+		const todoCollectionRef = collection(db, 'todos');
+		await addDoc(todoCollectionRef, {
+			task: task,
+			isCompleted: false,
+		});
 		setTask('');
 	};
 	const handleUpdateTask = (index) => {
