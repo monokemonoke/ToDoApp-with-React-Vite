@@ -1,27 +1,9 @@
-// import { useState } from 'react';
-import db from '../lib/firebase';
-import { doc, getDocs, addDoc } from 'firebase/firestore';
-
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { collection } from 'firebase/firestore';
 import { useState, useEffect } from 'react';
+import db from '../lib/firebase';
+import { doc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 
 const TodoList = () => {
-	const initialState = [
-		{
-			task: 'Learn vue.js',
-			isCompleted: false,
-		},
-		{
-			task: 'Learn React',
-			isCompleted: false,
-		},
-		{
-			task: 'Learn vite',
-			isCompleted: false,
-		},
-	];
+	const initialState = [];
 
 	const [todos, setTodos] = useState(initialState);
 	const [task, setTask] = useState('');
@@ -29,14 +11,20 @@ const TodoList = () => {
 	useEffect(() => {
 		const todoCollectionRef = collection(db, 'todos');
 		getDocs(todoCollectionRef).then((querySnapshot) => {
-			setTodos(querySnapshot.docs.map((doc) => doc.data()));
+			setTodos(
+				querySnapshot.docs.map((doc) => {
+					let todo = doc.data();
+					todo['id'] = doc.id;
+					return todo;
+				})
+			);
 		});
 	}, []);
 
-	const handleNewTask = (event) => {
+	const onChangeTask = (event) => {
 		setTask(event.target.value);
 	};
-	const handleSubmit = async (event) => {
+	const submitTodo = async (event) => {
 		event.preventDefault();
 		if (task === '') return;
 		setTodos((todos) => [...todos, { task, isCompleted: false }]);
@@ -47,14 +35,18 @@ const TodoList = () => {
 		});
 		setTask('');
 	};
-	const handleUpdateTask = (index) => {
+	const changeTodoStatus = (index) => {
 		const newTodos = todos.map((todo, todoIndex) => {
 			if (todoIndex === index) todo.isCompleted = !todo.isCompleted;
 			return todo;
 		});
 		setTodos(newTodos);
 	};
-	const handleRemoveTask = (index) => {
+	const removeTodo = async (index) => {
+		const id = todos[index].id;
+		const todoDocumentRef = doc(db, 'todos', id);
+		await deleteDoc(todoDocumentRef);
+
 		const newTodos = [...todos];
 		newTodos.splice(index, 1);
 		setTodos(newTodos);
@@ -63,12 +55,12 @@ const TodoList = () => {
 	return (
 		<div>
 			<h1>ToDo List</h1>
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={submitTodo}>
 				Add Task:
 				<input
 					value={task}
 					placeholder="Add New Task"
-					onChange={handleNewTask}
+					onChange={onChangeTask}
 				/>
 				<button type="submit">Add</button>
 			</form>
@@ -76,10 +68,10 @@ const TodoList = () => {
 				{todos.map((todo, index) => (
 					<li key={index}>
 						{todo.task}
-						<span onClick={() => handleUpdateTask(index)}>
-							{todo.isCompleted ? '✅' : '⬜'}
+						<span onClick={() => changeTodoStatus(index)}>
+							{todo.isCompleted ? '✅' : '🔲'}
 						</span>
-						<span onClick={() => handleRemoveTask(index)}>X</span>
+						<span onClick={() => removeTodo(index)}>X</span>
 					</li>
 				))}
 			</ul>
