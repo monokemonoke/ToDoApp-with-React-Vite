@@ -1,52 +1,13 @@
-import { useState } from 'react';
+// import { useState } from 'react';
 import db from '../lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDocs } from 'firebase/firestore';
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-
-const getTodoListFromFirestore = async () => {
-	// const todoRef = db.collection('todos');
-	// const todos = [];
-
-	// todoRef.get().then((querySnapshot) => {
-	// 	querySnapshot.forEach((doc) => {
-	// 		todos.push(doc.date());
-	// 	});
-	// });
-	// return todos;
-	const firebaseConfig = {
-		apiKey: 'AIzaSyAul-IcZtmL1-iHLYhmUOqVyMsbiF9hHkU',
-		authDomain: 'todoapp-21c6a.firebaseapp.com',
-		projectId: 'todoapp-21c6a',
-		storageBucket: 'todoapp-21c6a.appspot.com',
-		messagingSenderId: '776048101146',
-		appId: '1:776048101146:web:2f32f50484076da64acea3',
-		measurementId: 'G-MHE91BDY5V',
-	};
-
-	// Initialize Firebase
-	const app = initializeApp(firebaseConfig);
-	const db = getFirestore(app);
-
-	db.collection('todos')
-		.get()
-		.then((querySnapshot) => {
-			querySnapshot.forEach((doc) => {
-				console.log(`${doc.id} => ${doc.data()}`);
-			});
-		});
-
-	// const docRef = doc(db, "todos", "QNzCFw3SZM0oQe98Ylk7");
-	// const doc = await getDocFromCache(docRef);
-	// console.log(doc.data());
-
-	return [];
-};
+import { collection } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
 
 const TodoList = () => {
-	getTodoListFromFirestore();
-
 	const initialState = [
 		{
 			task: 'Learn vue.js',
@@ -64,6 +25,14 @@ const TodoList = () => {
 
 	const [todos, setTodos] = useState(initialState);
 	const [task, setTask] = useState('');
+
+	useEffect(() => {
+		const todoCollectionRef = collection(db, 'todos');
+		getDocs(todoCollectionRef).then((querySnapshot) => {
+			setTodos(querySnapshot.docs.map((doc) => doc.data()));
+			// querySnapshot.forEach((doc) => console.log(doc.data()));
+		});
+	}, []);
 
 	const handleNewTask = (event) => {
 		setTask(event.target.value);
