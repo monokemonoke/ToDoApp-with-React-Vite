@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+//@ts-ignore
 import db from '../lib/firebase';
 import { doc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 
 const TodoList = () => {
+	//@ts-ignore
 	const initialState = [];
 
+	//@ts-ignore
 	const [todos, setTodos] = useState(initialState);
 	const [task, setTask] = useState('');
 
@@ -21,9 +24,11 @@ const TodoList = () => {
 		});
 	}, []);
 
+	//@ts-ignore
 	const onChangeTask = (event) => {
 		setTask(event.target.value);
 	};
+	//@ts-ignore
 	const submitTodo = async (event) => {
 		event.preventDefault();
 		if (task === '') return;
@@ -35,14 +40,14 @@ const TodoList = () => {
 		});
 		setTask('');
 	};
-	const changeTodoStatus = (index) => {
+	const changeTodoStatus = (index: number) => {
 		const newTodos = todos.map((todo, todoIndex) => {
 			if (todoIndex === index) todo.isCompleted = !todo.isCompleted;
 			return todo;
 		});
 		setTodos(newTodos);
 	};
-	const removeTodo = async (index) => {
+	const removeTodo = async (index: number) => {
 		const id = todos[index].id;
 		const todoDocumentRef = doc(db, 'todos', id);
 		await deleteDoc(todoDocumentRef);
