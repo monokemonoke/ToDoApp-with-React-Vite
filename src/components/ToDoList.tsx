@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 //@ts-ignore
 import db from '../lib/firebase';
 import { doc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
+import { Button, IconButton, List, ListItem, ListItemText, TextField } from '@mui/material';
+import CheckBox from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const TodoList = () => {
 	//@ts-ignore
@@ -61,26 +65,35 @@ const TodoList = () => {
 		<div>
 			<h1>ToDo List</h1>
 			<form onSubmit={submitTodo}>
-				Add Task:
-				<input
+				<TextField
+					variant="standard"
 					value={task}
 					placeholder="Add New Task"
 					onChange={onChangeTask}
 				/>
-				<button type="submit">Add</button>
+				<Button variant="text" type="submit">Add</Button>
 			</form>
-			<ul>
+			<List>
 				{todos.map((todo, index) => (
-					<li key={index}>
-						{todo.task}
-						<span onClick={() => changeTodoStatus(index)}>
-							{todo.isCompleted ? '✅' : '🔲'}
-						</span>
-						<span onClick={() => removeTodo(index)}>X</span>
-					</li>
+					<ListItem key={index}>
+						<ListItemText onClick={() => changeTodoStatus(index)}>
+							<span style={{ textDecoration: todo.isCompleted ? "line-through" : "none" }}>
+								{todo.task}
+							</span>
+						</ListItemText>
+						<IconButton onClick={() => changeTodoStatus(index)}>
+							<CheckBox style={{ visibility: todo.isCompleted ? "visible" : "hidden" }} />
+						</IconButton>
+						<IconButton onClick={() => changeTodoStatus(index)}>
+							<CheckBoxOutlineBlankIcon style={{ visibility: !todo.isCompleted ? "visible" : "hidden" }} />
+						</IconButton>
+						<IconButton onClick={() => removeTodo(index)}>
+							<DeleteIcon />
+						</IconButton>
+					</ListItem>
 				))}
-			</ul>
-		</div>
+			</List>
+		</div >
 	);
 };
 
