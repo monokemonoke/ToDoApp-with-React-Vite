@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 //@ts-ignore
 import db from '../lib/firebase';
 import { doc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
-import { Button, IconButton, List, ListItem, ListItemText, TextField } from '@mui/material';
+import { Box, Button, Divider, IconButton, List, ListItem, ListItemText, TextField } from '@mui/material';
 import CheckBox from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteButton from './DeleteButton'
 
 const TodoList = () => {
 	//@ts-ignore
@@ -15,7 +15,7 @@ const TodoList = () => {
 	const [todos, setTodos] = useState(initialState);
 	const [task, setTask] = useState('');
 
-	useEffect(() => {
+	const fetchTodo = () => {
 		const todoCollectionRef = collection(db, 'todos');
 		getDocs(todoCollectionRef).then((querySnapshot) => {
 			setTodos(
@@ -26,6 +26,10 @@ const TodoList = () => {
 				})
 			);
 		});
+	};
+
+	useEffect(() => {
+		fetchTodo();
 	}, []);
 
 	//@ts-ignore
@@ -43,6 +47,7 @@ const TodoList = () => {
 			isCompleted: false,
 		});
 		setTask('');
+		fetchTodo();
 	};
 	const changeTodoStatus = (index: number) => {
 		const newTodos = todos.map((todo, todoIndex) => {
@@ -51,8 +56,11 @@ const TodoList = () => {
 		});
 		setTodos(newTodos);
 	};
+
 	const removeTodo = async (index: number) => {
+		console.log(index);
 		const id = todos[index].id;
+		console.log(id);
 		const todoDocumentRef = doc(db, 'todos', id);
 		await deleteDoc(todoDocumentRef);
 
@@ -75,22 +83,23 @@ const TodoList = () => {
 			</form>
 			<List>
 				{todos.map((todo, index) => (
-					<ListItem key={index}>
-						<ListItemText onClick={() => changeTodoStatus(index)}>
-							<span style={{ textDecoration: todo.isCompleted ? "line-through" : "none" }}>
-								{todo.task}
-							</span>
-						</ListItemText>
-						<IconButton onClick={() => changeTodoStatus(index)}>
-							<CheckBox style={{ visibility: todo.isCompleted ? "visible" : "hidden" }} />
-						</IconButton>
-						<IconButton onClick={() => changeTodoStatus(index)}>
-							<CheckBoxOutlineBlankIcon style={{ visibility: !todo.isCompleted ? "visible" : "hidden" }} />
-						</IconButton>
-						<IconButton onClick={() => removeTodo(index)}>
-							<DeleteIcon />
-						</IconButton>
-					</ListItem>
+					<Box key={index}>
+						<ListItem>
+							<ListItemText onClick={() => changeTodoStatus(index)}>
+								<span style={{ textDecoration: todo.isCompleted ? "line-through" : "none" }}>
+									{todo.task}
+								</span>
+							</ListItemText>
+							<IconButton onClick={() => changeTodoStatus(index)}>
+								<CheckBox style={{ visibility: todo.isCompleted ? "visible" : "hidden" }} />
+							</IconButton>
+							<IconButton onClick={() => changeTodoStatus(index)}>
+								<CheckBoxOutlineBlankIcon style={{ visibility: !todo.isCompleted ? "visible" : "hidden" }} />
+							</IconButton>
+							<DeleteButton onClick={() => removeTodo(index)} />
+						</ListItem>
+						<Divider />
+					</Box>
 				))}
 			</List>
 		</div >
